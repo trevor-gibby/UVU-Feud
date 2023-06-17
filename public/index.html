@@ -1,0 +1,1823 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UVU Feud</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <style>
+        /* Vue */
+        [v-cloak] 
+        {
+            display: none;
+        }
+
+        .slide-enter-active {
+        -moz-transition-duration: 0.3s;
+        -webkit-transition-duration: 0.3s;
+        -o-transition-duration: 0.3s;
+        transition-duration: 0.3s;
+        -moz-transition-timing-function: ease-in;
+        -webkit-transition-timing-function: ease-in;
+        -o-transition-timing-function: ease-in;
+        transition-timing-function: ease-in;
+        }
+
+        .slide-leave-active {
+        -moz-transition-duration: 0.3s;
+        -webkit-transition-duration: 0.3s;
+        -o-transition-duration: 0.3s;
+        transition-duration: 0.3s;
+        -moz-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+        -webkit-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+        -o-transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+        transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+        }
+
+        .slide-enter-to, .slide-leave {
+        max-height: 100px;
+        overflow: hidden;
+        }
+
+        .slide-enter, .slide-leave-to {
+        overflow: hidden;
+        max-height: 0;
+        }
+
+        :root {
+            --uvu-primary-green: #275d38;
+            --uvu-primary-green-rgb: 39, 93, 56;
+            --uvu-green-l1: #3f6f4e;
+            --uvu-green-l2: #578164;
+            --uvu-green-l3: #6f937a;
+            --uvu-green-d1: #235332;
+            --uvu-green-d2: #1e482c;
+            --uvu-black: #000;
+            --uvu-white: #fff;
+            --uvu-silver: #8e8c89;
+            --uvu-silver-rgb: 142,140,137;
+            --uvu-forest-l3: #e6f3ec;
+            --uvu-forest-d2: #1e4119;
+            
+            --uvu-heading-font: arial, helvetica, sans-serif;
+            --uvu-body-font: georgia, palatino linotype, book antiqua;
+        }
+
+        html {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            background: var(--uvu-green-l3);
+            background: -moz-linear-gradient(top,  var(--uvu-green-l3) 0%,  var(--uvu-green-l1) 100%);
+            background: -webkit-linear-gradient(top,  var(--uvu-green-l3) 0%, var(--uvu-green-l1) 100%);
+            background: linear-gradient(to bottom,  var(--uvu-green-l3) 0%, var(--uvu-green-l1) 100%);
+            filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='var(--uvu-green-l3)', endColorstr='var(--uvu-green-l1)', GradientType=0);
+            padding: 25px;
+            height: 100%;
+            width: 100%;
+            
+        }
+
+        /* Sections */
+        section {
+            padding-top: 100px;
+            padding-bottom: 100px;
+        }
+        @media (min-width: 992px) {
+            section {
+                padding-top: 100px;
+                padding-bottom: 100px;
+            }
+        }
+
+        /* Text */
+        .text-primary { color: var(--uvu-primary-green) !important; }
+        .text-secondary { color: var(--uvu-silver) !important; }
+
+        /* Buttons */
+        .btn-primary, .btn-primary:disabled {
+            background-color: var(--uvu-silver);
+            border-color: var(--uvu-silver);
+            box-shadow: #1e482c 3px 3px 9px 3px;
+        }
+
+        .btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+            background-color: var(--uvu-green-d1);
+            border-color: var(--uvu-green-d1);
+            box-shadow: #1e482c 3px 3px 9px 3px;
+        }
+
+        .select-btn {
+            width: 95%;
+            height: 10rem;
+            font-size: 2.5rem;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .exit-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+
+        .wrong-answer-btn {
+            border-radius: 50%;
+            height: 100px;
+            width: 100px;
+            color: #dc3545;
+            font-size: 60px;
+        }
+
+        .neutral-answer-btn {
+            border-radius: 50%;
+            height: 100px;
+            width: 100px;
+            color: #ffef08;
+            font-size: 35px;
+            text-align: center;
+        }
+
+        .face-off-btn {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            height: 300px;
+            width: 300px;
+            background-color: red;
+            border: 1px solid transparent;
+            -webkit-box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+            -moz-box-shadow: inset 0 1px 36px 1px rgba(0, 0, 0, 0.48);
+            box-shadow: inset 0 1px 36px 1px rgba(0, 0, 0, 0.48);
+        }
+
+        .face-off-btn:disabled { opacity: 0.5 }
+
+        /* Waiting Room */
+        .no-name-players {
+            position: absolute;
+            top: 0px;
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+
+        .player-groups {
+            min-height: 175px;
+            background-color: rgba(var(--uvu-silver-rgb),0.8);
+            border-color: var(--uvu-silver-rgb);
+            color: white;
+            border-radius: 0.5rem;
+            padding: 15px;
+        }
+
+        /* Host Controls */
+        .host .question-holder {
+            color: var(--uvu-forest-d2);
+            border: 1px solid black;
+            background: var(--uvu-forest-l3);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid black;
+            -webkit-box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+            -moz-box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+            box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        }
+
+        .host .host-answers {
+            background: black;
+            border: 1px solid black;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .host .host-answers .host-answer {
+            width: 100%;
+            background-color: var(--uvu-forest-l3);
+            padding: 10px;
+        }
+
+        .host .host-answers .host-answer:disabled {
+            text-decoration: line-through;
+        }
+
+        /* Game Finished */
+        .final-score .score-holder {
+            color: var(--uvu-forest-d2);
+            border: 1px solid black;
+            background: var(--uvu-forest-l3);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid black;
+            -webkit-box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+            -moz-box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+            box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        }
+
+        /* Game Board */
+        .gameBoard .cardHolder>div,
+        .gameBoard .LBG {
+        background: var(--uvu-green-l3);
+        background: -moz-linear-gradient(top, var(--uvu-green-l3) 0%, var(--uvu-green-l2) 17%, var(--uvu-green-l1) 50%, var(--uvu-green-d2) 51%, var(--uvu-green-d1) 59%, var(--uvu-primary-green) 71%, var(--uvu-green-d2) 84%, var(--uvu-black) 100%);
+        background: -webkit-linear-gradient(top, var(--uvu-green-l3) 0%, var(--uvu-green-l2) 17%, var(--uvu-green-l1) 50%, var(--uvu-green-d2) 51%, var(--uvu-green-d1) 59%, var(--uvu-primary-green) 71%, var(--uvu-green-d2) 84%, var(--uvu-black) 100%);
+        background: linear-gradient(to bottom, var(--uvu-green-l3) 0%, var(--uvu-green-l2) 17%, var(--uvu-green-l1) 50%, var(--uvu-green-d2) 51%, var(--uvu-green-d1) 59%, var(--uvu-primary-green) 71%, var(--uvu-green-d2) 84%, var(--uvu-black) 100%);
+        filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='var(--uvu-green-l3)', endColorstr='var(--uvu-green-d2)', GradientType=0);
+        }
+
+        .gameBoard .cardHolder>div:empty,
+        .gameBoard .score,
+        .gameBoard .button,
+        .gameBoard .DBG {
+        background: var(--uvu-primary-green);
+        background: -moz-linear-gradient(top, var(--uvu-green-l3) 0%, var(--uvu-green-l1) 49%, var(--uvu-green-d1) 50%, var(--uvu-green-d2) 100%);
+        background: -webkit-linear-gradient(top, var(--uvu-green-l3) 0%, var(--uvu-green-l2) 49%, var(--uvu-green-d1) 50%, var(--uvu-green-d2) 100%);
+        background: linear-gradient(to bottom, var(--uvu-green-l3) 0%, var(--uvu-green-l1) 49%, var(--uvu-green-d1) 50%, var(--uvu-green-d2) 100%);
+        filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='var(--uvu-green-l3)', endColorstr='var(--uvu-green-d2)', GradientType=0);
+        }
+
+        .gameBoard {
+        position: relative;
+        box-sizing: content-box;
+        font-family: var(--uvu-heading-font);
+        color: white;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 1);
+        border: 5px solid var(--uvu-primary-green);
+        text-align: center;
+        padding: 150px;
+        border-radius: 50%;
+        max-width: 1000px;
+        max-height: 800px;
+        min-width: 305px;
+        margin: auto;
+        background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/40041/bgFF.svg') var(--uvu-green-d1);
+        /*background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/40041/bgFF.svg') var(--uvu-green-d1);*/
+        background-repeat: repeat;
+        background-position: center center;
+        -webkit-box-shadow: 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        -moz-box-shadow: 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        box-shadow: 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        }
+
+        .gameBoard .score {
+        position: absolute;
+        text-align: center;
+        margin: auto;
+        font-size: 45px;
+        height: 55px;
+        line-height: 50px;
+        width: 90px;
+        border: 2px solid var(--uvu-white);
+        -webkit-box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        -moz-box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        }
+        .gameBoard .score#boardScore {
+        height: 75px;
+        line-height: 75px;
+        width: 125px;
+        font-size: 65px;
+        left: 0;
+        right: 0;
+        top: 20px;
+        }
+        .gameBoard .score#team1Score {
+        left: 10px;
+        top: 0;
+        bottom: 0;
+        }
+        .gameBoard .score#team2Score {
+        right: 10px;
+        top: 0;
+        bottom: 0;
+        }
+
+        .gameBoard .questionHolder {
+        width: 94%;
+        margin: auto;
+        height: 100px;
+        line-height: 100px;
+        text-align: center;
+        font-size: 30px;
+        color: var(--uvu-forest-d2);
+        text-shadow: initial;
+        text-align: center;
+        border: 1px solid black;
+        background: var(--uvu-forest-l3);
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid black;
+        -webkit-box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        -moz-box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        box-shadow: inset 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        }
+        .gameBoard .questionHolder span {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: normal;
+        }
+
+        .gameBoard .colHolder {
+        background: black;
+        padding: 4px;
+        }
+        .gameBoard .colHolder>div {
+        display: block;
+        box-sizing: content-box;
+        width:100%;
+        -webkit-box-shadow: 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        -moz-box-shadow: 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        box-shadow: 0 1px 24px 1px rgba(0, 0, 0, 0.48);
+        }
+        .gameBoard .cardHolder {
+        display: inline-block;
+        box-sizing: content-box;
+        position: relative;
+        vertical-align: top;
+        height: 50px;
+        margin: 4px;
+        width: 95%;
+        background: var(--uvu-black);
+        border: 4px solid var(--uvu-white);
+        }
+        .gameBoard .cardHolder:not(.empty){
+        cursor: pointer;
+        }
+        .gameBoard .cardHolder b {
+        position: absolute;
+        right: 0;
+        width: 45px;
+        text-align: center;
+        border-left: 2px solid var(--uvu-forest-d2);
+        }
+        .gameBoard .cardHolder span {
+        margin: 10px;
+        }
+        .gameBoard .cardHolder>div {
+        box-sizing: content-box;
+        top: -2px;
+        left: -2px;
+        margin: 0px;
+        padding: 0px;
+        position: absolute;
+        width: 100%;
+        line-height: 100%;
+        height: 100%;
+        border: 2px solid var(--uvu-forest-d2);
+        line-height: 50px;
+        }
+        .gameBoard .cardHolder .back {
+        font-size: 25px;
+        text-align: left;
+        height: 50px;
+        line-height: 50px;
+        }
+        .gameBoard .cardHolder .back span {
+        text-align: left;
+        display: inline-block;
+        vertical-align: middle;
+        line-height: normal;
+        }
+        .gameBoard .cardHolder .front {
+        text-align: center;
+        }
+        .gameBoard .cardHolder .front span {
+        font-size: 30px;
+        position: absolute;
+        border-radius: 50%;
+        line-height: 35px;
+        height: 35px;
+        width: 45px;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: block;
+        margin: auto;
+        border: 2px solid var(--uvu-silver);
+        }
+
+        @media screen and (min-width: 780px) {
+        .gameBoard .colHolder>div{
+            display: inline-block;
+            width: 49%;
+        }
+        }
+
+        .gameBoard .strike-display {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            padding: 25px;
+        }
+
+        audio::-webkit-media-controls-enclosure {
+            background-color: transparent;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div v-cloak v-if="gamePage === 'landing'">
+            <section class="pt-3">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h1 class="display-1">Welcome to UVU Feud</h1>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="pt-0">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6 col-12 text-center my-md-0 my-3 order-lg-1 order-2">
+                            <button class="btn btn-lg btn-primary select-btn" v-on:click="createRoom">Create Party</button>
+                        </div>
+                        <div class="col-md-6 col-12 text-center my-md-0 my-3 order-lg-2 order-1">
+                            <button class="btn btn-lg btn-primary select-btn" v-on:click="gamePage = 'joinRoom'">Join Party</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div v-cloak v-else-if="gamePage === 'createRoom'">
+            <button class="btn btn-primary back-btn" v-on:click="destroyRoom">
+                Back
+            </button>
+            <div class="container">
+                <div class="row justify-content-end">
+                    <div class="col-3">
+                        <audio controls loop autoplay>
+                            <source src="/sounds/family-feud-theme.wav" type="audio/mpeg">
+                        </audio>
+                    </div>
+                </div>
+            </div>
+            <section class="py-2">
+                <h5 v-if="gameState.noNamePlayers > 0" class="text-warning no-name-players">{{gameState.noNamePlayers}} player(s) still need to enter their name(s)</h5>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h3>Join party with your mobile device at: THE DOMAIN</h3>
+                            <h1 class="display-3">Room Code: {{roomCode}}</h1>
+                            <h1><button class="btn btn-lg btn-primary" :disabled="startGameDisabled" v-on:click="startGame">Start Game</button></h1>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="py-1">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-6 text-center player-groups">
+                            <h3>Unassigned Players</h3>
+                            <h4 class="text-primary py-2 m-0" v-for="uaPlayer in gameState.unassignedPlayers">{{uaPlayer}}</h4>
+                        </div>
+                        <div class="col-10 text-center py-4">
+                            <h3>Host: {{gameState.host}}</h3>
+                        </div>
+                        <div class="col-5 text-center player-groups me-2">
+                            <h3>Team 1</h3>
+                            <div class="row">
+                                <div class="col-6" v-for="t1Player in gameState.team1Players">
+                                    <h4 class="text-primary py-2 m-0">{{t1Player}}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-5 text-center player-groups ms-2">
+                            <h3>Team 2</h3>
+                            <div class="row">
+                                <div class="col-6" v-for="t2Player in gameState.team2Players">
+                                    <h4 class="text-primary py-2 m-0">{{t2Player}}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div v-cloak v-else-if="gamePage === 'joinRoom'">
+            <button class="btn btn-primary back-btn" v-on:click="gamePage = 'landing'">
+                Back
+            </button>
+            <section>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-4 col-md-6 col-12 text-center">
+                            <form v-on:submit="joinRoomSubmit($event)">
+                                <div class="form-group mb-2">
+                                    <label for="roomCodeEntry"><h3 class="display-3">Enter Room Code</h3></label>
+                                    <input type="text" maxlength="4" class="form-control text-center" v-on:keyup="joinRoomTextEntry($event)" v-model="joinRoomEntry"/>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary w-100" :disabled="joinButtonDisabled">Join</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div v-if="joinPageFailure" class="row">
+                        <div class="col-12">
+                            <h1 class="text-warning text-center">Entered room doesn't exist</h1>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div v-cloak v-else-if="gamePage === 'nameSelect'">
+            <!-- Entry Box for Choosing Name -->
+            <section>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-4 col-md-6 col-12 text-center">
+                            <form v-on:submit="playerNameSubmit($event)">
+                                <div class="form-group mb-2">
+                                    <label for="playerNameEntry"><h3 class="display-3">Enter Your Name</h3></label>
+                                    <input type="text" maxlength="20" class="form-control text-center" v-on:keyup="playerNameTextEntry($event)" v-model="playerNameEntry"/>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary w-100" :disabled="playerEntryButtonDisabled">Join</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div v-if="playerNameEntryFailure" class="row">
+                        <div class="col-12">
+                            <h1 class="text-warning text-center">Name is already taken</h1>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div v-cloak v-else-if="gamePage === 'waitingRoom'">
+            <!-- Waiting Room for everyone to join -->
+            <!-- Team Select (Team1, Team2, or Host) -->
+            <section>
+                <div class="container">
+                    <div class="row justify-content-center text-center">
+                        <div class="col-12 mb-5">
+                            <h1 class="display-3">Select Your Team</h1>
+                        </div>
+                        <div class="col-12 mb-5">
+                            <h2 v-if="playerType == 'team1Players'">Team 1 Selected</h2>
+                            <h2 v-else-if="playerType == 'team2Players'">Team 2 Selected</h2>
+                            <h2 v-else-if="playerType == 'host'">Host Selected</h2>
+                            <h2 v-else>No Team Selected</h2>
+                        </div>
+                        <div class="col-6">
+                            <h2><button class="btn btn-primary select-btn" style="font-size: 2rem;" v-on:click="joinTeam1">Team 1</button></h2>
+                        </div>
+                        <div class="col-6">
+                            <h2><button class="btn btn-primary select-btn" style="font-size: 2rem;" v-on:click="joinTeam2">Team 2</button></h2>
+                        </div>
+                        <div class="col-6">
+                            <h2><button class="btn btn-primary select-btn" style="font-size: 2rem;" v-on:click="becomeHost" :disabled="gameState.host != ''">Host</button></h2>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div v-cloak v-else-if="gamePage === 'playing' && gameState.presenterDC === false && gameState.hostDC === false && gameState.team1DC === false && gameState.team2DC === false">
+            <button class="btn btn-primary btn-sm exit-btn" v-on:click="resetApp(true)">Exit</button>
+            <div v-if="gameState.finished === false">
+                <div v-if="playerType === 'presenter'">
+                    <div class="gameboard">
+                        <!-- Scores -->
+                        <div class="score" id="boardScore">{{ gameState.boardScore }}</div>
+                        <div class="score" id="team1Score">{{ gameState.team1Points }}</div>
+                        <div class="score" id="team2Score">{{ gameState.team2Points }}</div>
+                        <!-- Question -->
+                        <div class="questionHolder">
+                            <span v-if="gameState.hostStarted" class="question">{{ gameState.question }}</span>
+                        </div>
+                        <!-- Answers -->
+                        <div class="colHolder">
+                            <div class="col1">
+                                <div v-for="num in gameState.answerHoldersCol1">
+                                    <div v-if="gameState.answers[num]" class="cardHolder">
+                                        <div class="card" v-on:click="gameState.answers[num].answered = !gameState.answers[num].answered">
+                                            <transition name="slide">
+                                                <div v-if="!gameState.answers[num].answered" class="front">
+                                                    <span class="DBG">{{num + 1}}</span>
+                                                </div>
+                                            </transition>
+                                            <transition name="slide">
+                                                <div v-if="gameState.answers[num].answered" class="back DBG">
+                                                    <span>{{gameState.answers[num].answerText}}</span>
+                                                    <b class="LBG">{{gameState.answers[num].answerPoints}}</b>
+                                                </div>
+                                            </transition>
+                                        </div>
+                                    </div>
+                                    <div v-else class="cardHolder empty">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col2">
+                                <div v-for="num in gameState.answerHoldersCol2">
+                                    <div v-if="gameState.answers[num]" class="cardHolder">
+                                        <div class="card" v-on:click="gameState.answers[num].answered = !gameState.answers[num].answered">
+                                            <transition name="slide">
+                                                <div v-if="!gameState.answers[num].answered" class="front">
+                                                    <span class="DBG">{{num + 1}}</span>
+                                                </div>
+                                            </transition>
+                                            <transition name="slide">
+                                                <div v-if="gameState.answers[num].answered" class="back DBG">
+                                                    <span>{{gameState.answers[num].answerText}}</span>
+                                                    <b class="LBG">{{gameState.answers[num].answerPoints}}</b>
+                                                </div>
+                                            </transition>
+                                        </div>
+                                    </div>
+                                    <div v-else class="cardHolder empty">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Strike Display -->
+                        <div class="strike-display row justify-content-center" v-if="showStrikes > 0">
+                            <div v-for="strike in showStrikes" class="col-2 text-center" style="width: 200px;"><img src="/img/strike-transparent.png" style="height: 200px; width: 200px;" ></div>
+                        </div>
+                    </div>
+                    <audio id="wrong-answer-audio">
+                        <source src="/sounds/wrong-answer.wav" type="audio/mpeg">
+                    </audio>
+                    <audio id="correct-answer-audio">
+                        <source src="/sounds/correct-answer.wav" type="audio/mpeg">
+                    </audio>
+                    <audio id="neutral-answer-audio">
+                        <source src="/sounds/neutral-answer.wav" type="audio/mpeg">
+                    </audio>
+                </div>
+                <div v-else-if="playerType === 'team1Players' || playerType === 'team2Players' || playerType === 'host'">
+                    <!-- Display if in face off -->
+                    <div v-if="gameState.inFaceOff">
+                        <!-- Display if you're in the faceoff -->
+                        <div v-if="playerName == gameState.team1Players[gameState.team1PlayersTurn] || playerName == gameState.team2Players[gameState.team2PlayersTurn]">
+                            <button class="face-off-btn" :disabled="!gameState.hostStarted || gameState.faceOffBtnClicked != ''" v-on:click="socket.emit('face-off-btn', playerType)"></button>
+                            <!-- If you won the face-off -->
+                            <div class="your-turn" v-if="gameState.faceOffBtnClicked == playerType"><h2 class="text-center mt-5 display-3">You're Answering</h2></div>
+                        </div>
+                        <!-- Display for Host - shows question - button to skip question - start round button -->
+                        <div class="host" v-else-if="playerType == 'host'">
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    <div class="col-12 text-center">
+                                        <div class="question-holder">
+                                            <h2 class="text-decoration-underline">Question</h2>
+                                            <h3>{{gameState.question}}</h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-12" v-if="gameState.hostStarted === false">
+                                        <div class="row justify-content-center">
+                                            <div class="col-12 text-center">
+                                                <button class="btn btn-primary w-100 mb-5" v-on:click="getQuestion()">Skip Question</button>
+                                            </div>
+                                            <div class="col-12 text-center">
+                                                <button class="btn btn-primary select-btn" v-on:click="gameState.hostStarted = true; socket.emit('update-game-state', gameState);">Start Round</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12" v-else>
+                                        <!-- Display about Who is Answering -->
+                                        <div class="row justify-content-center">
+                                            <div class="col-12 question-holder text-center">
+                                                <h1 class="text-decoration-underline">Answering</h1>
+                                                <h2>{{gameState.playerAnsweringQuestion}}</h2>
+                                                <div v-if="gameState.teamWonFaceOff !== ''">
+                                                    <h1>Face-Off Winner: {{gameState.teamWonFaceOff}}</h1>
+                                                    <!-- Buttons to choose which teams turn -->
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <button style="font-size: 30px;" class="btn btn-primary select-btn" v-on:click="teamStarting('team1Players')">Team 1 Starting</button>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <button style="font-size: 30px;" class="btn btn-primary select-btn" v-on:click="teamStarting('team2Players')">Team 2 Starting</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Display of clickable Answers -->
+                                            <div class="col-12 host-answers">
+                                                <button class="host-answer d-block" v-for="(ans, index) in gameState.answers" :disabled="ans.answered" v-on:click="rightAnswer(index, gameState.faceOffBtnClicked)">{{ans.answerText}} - {{ans.answerPoints}}</button>
+                                            </div>
+                                            <!-- Button for wrong answer -->
+                                            <button class="btn btn-primary wrong-answer-btn" v-on:click="wrongAnswer(true)">X</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Display for other players - basically nothing -->
+                        <div v-else>
+                            <h1 class="text-center mt-5 display-3">Answering: {{gameState.playerAnsweringQuestion}}</h1>
+                        </div>
+                    </div>
+                    <!-- Not in face-off -->
+                    <div v-else>
+                        <!-- Display for Host -->
+                        <div class="host" v-if="playerType === 'host'">
+                            <div class="container">
+                                <div class="row">
+                                    <!-- Question -->
+                                    <div class="col-12 text-center">
+                                        <div class="question-holder">
+                                            <h2 class="text-decoration-underline">Question</h2>
+                                            <h3>{{gameState.question}}</h3>
+                                        </div>
+                                    </div>
+                                    <!-- Player Answering -->
+                                    <div class="col-12 text-center">
+                                        <div class="question-holder">
+                                            <div v-if="gameState.teamAnswering != ''">
+                                                <h1 class="text-decoration-underline">Answering</h1>
+                                                <h2>{{gameState.playerAnsweringQuestion}}</h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Display of clickable Answers -->
+                                    <div class="col-12 host-answers">
+                                        <button class="host-answer d-block" v-for="(ans, index) in gameState.answers" :disabled="ans.answered" v-on:click="rightAnswer(index)">{{ans.answerText}} - {{ans.answerPoints}}</button>
+                                    </div>
+                                    <div class="col-12 pb-5" v-if="gameState.teamAnswering != ''">
+                                        <!-- Button for wrong answer -->
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h2 class="text-danger text-center"><span class="mx-2" v-for="strike in gameState.strikes">X</span></h2>
+                                            </div>
+                                            <div class="col-6 text-center">
+                                                <button class="btn btn-primary wrong-answer-btn" v-on:click="wrongAnswer()">X</button>
+                                            </div>
+                                            <div class="col-6 text-center">
+                                                <button class="btn btn-primary neutral-answer-btn" v-on:click="neutralAnswer()">IDK</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 pb-5 text-center" v-else>
+                                        <button class="btn btn-primary select-btn" v-if="gameState.round < 3" v-on:click="nextRound()">Next Round</button>
+                                        <button class="btn btn-primary select-btn" v-else v-on:click="nextRound()">Finish Game</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Display for Players -->
+                        <div v-else>
+                            <!-- If your team is the one answering -->
+                            <div v-if="playerType === gameState.teamAnswering">
+                                <!-- If team 1 is answering -->
+                                <div v-if="playerType === 'team1Players'">
+                                    <!-- Display for player answering -->
+                                    <div v-if="playerName === gameState.team1Players[gameState.team1PlayersTurn] && gameState.stealing === false">
+                                        <h1 class="your-turn text-center mt-5 display-2">Your Turn</h1>
+                                    </div>
+                                    <!-- Display for teammates of player answering -->
+                                    <div v-else>
+                                        <h1 class="text-center mt-5 display-2">Your Team is Answering</h1>
+                                    </div>
+                                </div>
+                                <!-- If team 2 is answering -->
+                                <div v-else>
+                                    <!-- Display for player answering -->
+                                    <div v-if="playerName === gameState.team2Players[gameState.team2PlayersTurn] && gameState.stealing === false">
+                                        <h1 class="your-turn text-center mt-5 display-2">Your Turn</h1>
+                                    </div>
+                                    <!-- Display for teammates of player answering -->
+                                    <div v-else>
+                                        <h1 class="text-center mt-5 display-2">Your Team is Answering</h1>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- If your team is not answering -->
+                            <div v-else>
+                                <h1 class="text-center mt-5 display-2">The other team is answering</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-else>
+                    <h1 class="text-center mt-5 display-2">Wait for next game to join</h1>
+                </div>
+            </div>
+            <!-- Game finished displays -->
+            <div v-else>
+                <!-- Presenter Display -->
+                <div v-if="playerType === 'presenter'">
+                    <div class="final-score">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-6 text-center score-holder">
+                                    <h1>Team 1: {{gameState.team1Points}}</h1>
+                                </div>
+                                <div class="col-6 text-center score-holder">
+                                    <h1>Team 2: {{gameState.team2Points}}</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="winningTeam" v-if="gameState.team1Points > gameState.team2Points">
+                        <div class="container mb-5">
+                            <div class="row">
+                                <div class="col-12 text-center player-groups">
+                                    <h1>Team 1 Wins!</h1>
+                                        <h2 v-for="player in gameState.team1Players">
+                                            {{player}}
+                                        </h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div class="container mb-5">
+                            <div class="row">
+                                <div class="col-12 text-center player-groups">
+                                    <h1>Team 2 Wins!</h1>
+                                    <h2 v-for="player in gameState.team2Players">
+                                        {{player}}
+                                    </h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container mt-5">
+                        <div class="row">
+                            <div class="col-6 text-center">
+                                <button class="btn btn-primary btn-lg select-btn" v-on:click="gamePage = 'createRoom'; resetGameState()">Play Again</button>
+                            </div>
+                            <div class="col-6 text-center">
+                                <button class="btn btn-primary btn-lg select-btn" v-on:click="resetApp(true)">Exit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Presenter Display -->
+                <!-- Players Display -->
+                <div v-else>
+                    <div class="container mt-3">
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <h1 v-if="gameState.team1Points > gameState.team2Points && playerType === 'team1Players'">Your Team Won!</h1>
+                                <h1 v-else-if="gameState.team1Points > gameState.team2Points && playerType === 'team2Players'">Your Team Lost</h1>
+                                <h1 v-else-if="gameState.team2Points > gameState.team1Points && playerType === 'team2Players'">Your Team Won!</h1>
+                                <h1 v-else-if="gameState.team2Points > gameState.team1Points && playerType === 'team1Players'">Your Team Lost</h1>
+                                <h1 v-else>Game Over - You were the GHOAT (Greatest Host of All Time)</h1>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="btn btn-primary select-btn" v-on:click="resetApp()">Exit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-cloak v-else-if="gamePage === 'playing' && (gameState.presenterDC || gameState.hostDC || gameState.team1DC || gameState.team2DC)">
+            <div v-if="gameState.presenterDC">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h1>Waiting for Presenter to Reconnect</h1>
+                            <button v-on:click="resetApp(true)">Leave Game</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="gameState.hostDC">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h1>Waiting for Host to Reconnect</h1>
+                            <button v-on:click="resetApp(true)" v-if="playerType !== 'presenter'">Leave Game</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="gameState.team1DC">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h1>Team 1 Disconnected</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="gameState.team2DC">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <h1>Team 2 Disconnected</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-cloak v-else-if="gamePage === 'reconnect failed'">
+            <section>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1>Reconnect Failed</h1>
+                        </div>
+                        <div class="col-12">
+                            <button v-on:click="window.location = '/'">Try Again</button>
+                        </div>
+                        <div class="col-12">
+                            <button v-on:click="resetApp()">Exit</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+
+    <!-- Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>window.Vue || document.write('<script src="../node_modules/vue/dist/vue.js"><\/script>')</script>
+
+    <!-- Jquery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- SocketIO -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- Script Starts Here -->
+    <script>
+        $().ready(() => {            
+
+            const app = new Vue({
+                el: "#app",
+                data: {
+                    // Socket
+                    socket: io(),
+
+                    // General Data
+                    // -------------
+                    gamePage: 'landing',
+                    roomCode: '1234',
+                    playerType: '',
+                    playerName: '',
+                    // ----------------
+                    // End General Data
+
+                    // Join Page Data
+                    // --------------
+                    joinButtonDisabled: true,
+                    joinRoomEntry: '',
+                    joinPageFailure: false,
+                    // ------------------
+                    // End Join Page Data
+
+                    // Player Name Entry Data
+                    // ----------------------
+                    playerEntryButtonDisabled: true,
+                    playerNameEntry: '',
+                    playerNameEntryFailure: false,
+                    // --------------------------
+                    // End Player Name Entry Data
+
+                    // Create Room Page Data
+                    // ---------------------
+                    startGameDisabled: true,
+                    // --------------------
+                    // End Create Room Data
+
+                    // Presenter Display Data
+                    // ----------------------
+                    showStrikes: 0,
+                    // -------------------------
+                    // End Presenter Display Data
+
+                    // Game State
+                    // ---------
+                    gameState: {
+                        gameStatus: 'waiting',
+                        noNamePlayers: 0,
+                        unassignedPlayers: [],
+                        team1Players: [],
+                        team1PlayersTurn: 0,
+                        team1Points: 0,
+                        team2Players: [],
+                        team2PlayersTurn: 0,
+                        team2Points: 0,
+                        hostStarted: false,
+                        inFaceOff: true,
+                        faceOffBtnClicked: '',
+                        faceOffFirstAnsIndex: '',
+                        teamWonFaceOff: '',
+                        playerAnsweringQuestion: '',
+                        teamAnswering: '',
+                        host: '',
+                        question: '',
+                        answers: [
+                            {answerText: '', answerPoints: 0, answered: false}
+                        ],
+                        answerHoldersCol1: [],
+                        answerHoldersCol2: [],
+                        strikes: 0,
+                        round: 0,
+                        boardScore: 0,
+                        stealing: false,
+                        finished: false,
+                        presenterDC: false,
+                        hostDC: false,
+                        team1DC: false,
+                        team2DC: false,
+                        correctAnswer: false,
+                        neutralAnswer: false
+                    },
+                    // --------------
+                    // End Game State
+                },
+                mounted: function() {
+                    this.addSocketEvents();
+                    // Check local storage for player name value and room code
+                    let roomCode = this.getCookie('roomCode');
+                    let playerName = this.getCookie('playerName');
+                    let playerType = this.getCookie('playerType');
+                    if (roomCode !== '' && roomCode.length === 4) {
+                        this.socket.emit('re-join-room', roomCode, playerName, playerType);
+                        this.roomCode = roomCode;
+                        this.playerName = playerName;
+                        this.playerType = playerType;
+                        this.gamePage = 'playing';
+                    }
+                },
+                updated: function() {
+                    // Handle Vue updates for game in waiting state
+                    if (this.gameState.gameStatus === 'waiting' && this.gamePage === 'createRoom') {
+                        if (this.gameState.noNamePlayers < 1 && this.gameState.team1Players.length > 0 && this.gameState.team2Players.length > 0 && this.gameState.host != '')
+                            this.startGameDisabled = false;
+                        else
+                            this.startGameDisabled = true;
+                    }
+                    // If it's the players turn after game state update
+                    if (this.gameState.playerAnsweringQuestion !== '' && this.gameState.playerAnsweringQuestion === this.playerName) {
+                        navigator.vibrate([100,30,100]);
+                        $('.your-turn').fadeOut('slow').fadeIn('slow').fadeOut('slow').fadeIn('slow').fadeOut('slow').fadeIn('slow').fadeOut('slow').fadeIn('slow');
+                    }
+
+                    if (this.playerType === 'presenter' && this.gameState.correctAnswer === true) {
+                        // Play correct answer audio
+                        $('#correct-answer-audio')[0].play();
+                        this.gameState.correctAnswer = false;
+                        this.socket.emit('update-game-state', this.gameState);
+                    }
+                    if (this.playerType === 'presenter' && this.gameState.neutralAnswer === true) {
+                        // Play correct answer audio
+                        $('#neutral-answer-audio')[0].play();
+                        this.gameState.neutralAnswer = false;
+                        this.socket.emit('update-game-state', this.gameState);
+                    }
+
+                },
+                methods: {
+                    // Join Room Methods
+                    joinRoomTextEntry: function() {
+                        if (this.joinRoomEntry.length == 4) this.joinButtonDisabled = false;
+                        else this.joinButtonDisabled = true;
+                    },
+                    joinRoomSubmit: function(event) {
+                        if (event) event.preventDefault();
+                        // Attempt to join existing room with Socket
+                        this.socket.emit('join-room', this.joinRoomEntry.toUpperCase());
+                    },
+                    // Enter Name Methods:
+                    playerNameTextEntry: function() {
+                        if (this.playerNameEntry.length > 0) this.playerEntryButtonDisabled = false;
+                        else this.playerEntryButtonDisabled = true;
+                    },
+                    playerNameSubmit: function(event) {
+                        if (event) event.preventDefault();
+
+                        // Check that name isn't already taken
+                        if (this.gameState.unassignedPlayers.includes(this.playerNameEntry) || this.gameState.team1Players.includes(this.playerNameEntry) || this.gameState.team2Players.includes(this.playerNameEntry) || this.gameState.host == this.playerNameEntry) {
+                            this.playerNameEntryFailure = true;
+                        }
+                        else {
+                            this.playerNameEntryFailure = false;
+                            // Emit name to room
+                            this.playerName = this.playerNameEntry;
+                            this.gameState.unassignedPlayers.push(this.playerNameEntry);
+                            this.playerType = 'unassignedPlayers';
+                            this.gameState.noNamePlayers--;
+                            this.socket.emit('update-game-state', this.gameState, this.playerNameEntry);
+                            this.gamePage = 'waitingRoom';
+                        }
+                    },
+                    // Team/Host Select Methods
+                    joinTeam1: function() {
+                        // Remove from current team or host
+                        if (this.playerType == 'host') {
+                            this.gameState.host = '';
+                        }
+                        else {
+                            let currentTeam = this.gameState[this.playerType];
+                            let index = currentTeam.indexOf(this.playerName);
+                            if (index !== -1) {
+                                currentTeam.splice(index, 1);
+                            }
+                        }
+                        // Add to team 1
+                        this.gameState.team1Players.push(this.playerName);
+                        this.playerType = 'team1Players';
+                        // Update game state
+                        this.socket.emit('update-game-state', this.gameState);
+                    },
+                    joinTeam2: function() {
+                        // Remove from current team or host
+                        if (this.playerType == 'host') {
+                            this.gameState.host = '';
+                        }
+                        else {
+                            let currentTeam = this.gameState[this.playerType];
+                            let index = currentTeam.indexOf(this.playerName);
+                            if (index !== -1) {
+                                currentTeam.splice(index, 1);
+                            }
+                        }
+                        // Add to team 2
+                        this.gameState.team2Players.push(this.playerName);
+                        this.playerType = 'team2Players';
+                        // Update game state
+                        this.socket.emit('update-game-state', this.gameState);
+                    },
+                    becomeHost: function() {
+                        // Remove from current team or host
+                        if (this.playerType == 'host') {
+                            this.gameState.host = '';
+                        }
+                        else {
+                            let currentTeam = this.gameState[this.playerType];
+                            let index = currentTeam.indexOf(this.playerName);
+                            if (index !== -1) {
+                                currentTeam.splice(index, 1);
+                            }
+                        }
+                        this.gameState.host = this.playerName;
+                        this.playerType = 'host';
+                        // Update game state
+                        this.socket.emit('update-game-state', this.gameState);
+                    },
+                    // Create/Delete Room Methods
+                    createRoom: function() {
+                        // Create Room with Socket
+                        this.socket.emit('create-room');
+                    },
+                    destroyRoom: function() {
+                        // Called when person creating room clicks on back
+                        if (confirm('Are you sure you want to go back? This will destroy the room.')) {
+                            // Delete room
+                            this.socket.emit('destroy-room');
+                            // Return to landing page
+                            this.gamePage = 'landing';
+                        }
+
+                    },
+                    leaveRoom: function() {
+                        // Allows player to leave the game
+                        this.socket.emit('leave-room', true);
+                        this.resetApp();
+                    },
+
+                    // Game Play Methods
+                    startGame: function() {
+                        this.gameState.gameStatus = 'playing';
+                        this.gameState.round = 1;
+                        this.gameState.inFaceOff = true;
+                        this.gameState.faceOffBtnClicked = '';
+                        this.gameState.playerAnsweringQuestion = '';
+                        this.gameState.teamAnswering = '';
+                        this.gameState.hostStarted = false;
+                        this.getQuestion();
+                        this.socket.emit('start-game', this.gameState);
+                    },
+                    nextRound: function() {
+                        if (this.gameState.round < 3) {
+                            this.gameState.round++;
+                            // Initialize other game state stuff before round
+                            this.gameState.boardScore = 0;
+                            this.gameState.strikes = 0;
+                            this.gameState.stealing = false;
+                            this.gameState.inFaceOff = true;
+                            this.gameState.faceOffBtnClicked = '';
+                            this.gameState.playerAnsweringQuestion = '';
+                            this.gameState.teamAnswering = '';
+                            this.gameState.hostStarted = false;
+                            // Get question and send updated game state
+                            this.getQuestion();
+                            this.socket.emit('update-game-state', this.gameState);
+                        }
+                        // Else game has ended
+                        else {
+                            this.gameState.finished = true;
+                            this.socket.emit('update-game-state', this.gameState);
+                        }
+                    },
+                    
+                    teamStarting: function(teamStarting) {
+                        // Update team answering
+                        this.gameState.teamAnswering = teamStarting;
+                        this.gameState.inFaceOff = false;
+                        this.gameState.teamWonFaceOff = '';
+                        this.gameState.stealing = false; 
+                        // Update player answering
+                        this.gameState.playerAnsweringQuestion = teamStarting === 'team1Players' ? this.gameState.team1Players[this.gameState.team1PlayersTurn] : this.gameState.team2Players[this.gameState.team2PlayersTurn];
+                        
+                        this.socket.emit('update-game-state', this.gameState)
+                    },
+
+                    rightAnswer: function(ansIndex, faceOffAnswer = false) {
+                        // Set answered property to true
+                        this.gameState.answers[ansIndex].answered = true;
+                        if (faceOffAnswer === 'team1Players') {
+                            // Update board score
+                            this.gameState.boardScore += this.gameState.answers[ansIndex].answerPoints * this.gameState.round;
+                            // Increment turn on team 1
+                            this.nextPlayerTurn('team1Players');
+                            // If stealing or got number 1 answer then next player answering is on your team
+                            if ((this.gameState.stealing && ansIndex < this.gameState.faceOffFirstAnsIndex) || ansIndex == 0) {
+                                this.gameState.teamWonFaceOff = 'Team 1';
+                                this.gameState.playerAnsweringQuestion = this.gameState.team1Players[this.gameState.team1PlayersTurn];
+                            }
+                            // If steal is unsuccessful then switch to other team
+                            else if (this.gameState.stealing && ansIndex > this.gameState.faceOffFirstAnsIndex) {
+                                this.gameState.faceOffFirstAnsIndex = '';
+                                this.gameState.stealing = false;
+                                this.gameState.faceOffBtnClicked = 'team2Players';
+                                this.gameState.playerAnsweringQuestion = this.gameState.team2Players[this.gameState.team2PlayersTurn];
+                            }
+                            // Otherwise switches to other team to try to steal
+                            else {
+                                this.gameState.faceOffFirstAnsIndex = ansIndex;
+                                this.gameState.stealing = true;
+                                this.gameState.faceOffBtnClicked = 'team2Players';
+                                this.gameState.playerAnsweringQuestion = this.gameState.team2Players[this.gameState.team2PlayersTurn];
+                            }
+                        }
+                        else if (faceOffAnswer === 'team2Players') {
+                            this.gameState.boardScore += this.gameState.answers[ansIndex].answerPoints * this.gameState.round;
+
+                            this.nextPlayerTurn('team2Players');
+                            // If stealing or got number 1 answer then team 2 stays as answering
+                            if ((this.gameState.stealing && ansIndex < this.gameState.faceOffFirstAnsIndex) || ansIndex == 0) {
+                                this.gameState.teamWonFaceOff = 'Team 2';
+                                this.gameState.playerAnsweringQuestion = this.gameState.team2Players[this.gameState.team2PlayersTurn];
+                            }
+                            // If steal is unsuccessful then switch to other team
+                            else if (this.gameState.stealing && ansIndex > this.gameState.faceOffFirstAnsIndex) {
+                                this.gameState.faceOffFirstAnsIndex = '';
+                                this.gameState.stealing = false;
+                                this.gameState.faceOffBtnClicked = 'team1Players';
+                                this.gameState.playerAnsweringQuestion = this.gameState.team1Players[this.gameState.team1PlayersTurn];
+                            }
+                            // Otherwise switches to other team to try to steal
+                            else {
+                                this.gameState.faceOffFirstAnsIndex = ansIndex;
+                                this.gameState.stealing = true;
+                                this.gameState.faceOffBtnClicked = 'team1Players';
+                                this.gameState.playerAnsweringQuestion = this.gameState.team1Players[this.gameState.team1PlayersTurn];
+                            }
+                        }                        
+                        else if (this.gameState.teamAnswering === 'team1Players') {
+                            // Increment board score
+                            this.gameState.boardScore += this.gameState.answers[ansIndex].answerPoints * this.gameState.round;
+                            // Increment team 1 player turn
+                            this.nextPlayerTurn('team1Players');
+                            // If stealing or got final answer then team 1 won the round
+                            let checkAnswered = (ans) => {return ans.answered};
+                            if (this.gameState.stealing || this.gameState.answers.every(checkAnswered)) {
+                                this.gameState.team1Points += this.gameState.boardScore;
+                                this.gameState.playerAnsweringQuestion = '';
+                                this.gameState.teamAnswering = '';
+                            }
+                            else {
+                                this.gameState.playerAnsweringQuestion = this.gameState.team1Players[this.gameState.team1PlayersTurn];
+                            }
+                        }
+                        else if (this.gameState.teamAnswering === 'team2Players') {
+                            // Increment board score
+                            this.gameState.boardScore += this.gameState.answers[ansIndex].answerPoints * this.gameState.round;
+                            // Increment team 2 players turn
+                            this.nextPlayerTurn('team2Players');
+
+                            // If stealing or got final answer then team 1 won the round
+                            let checkAnswered = (ans) => {return ans.answered};
+                            if (this.gameState.stealing || this.gameState.answers.every(checkAnswered)) {
+                                this.gameState.team2Points += this.gameState.boardScore;
+                                this.gameState.playerAnsweringQuestion = '';
+                                this.gameState.teamAnswering = '';
+                            }
+                            else {
+                                this.gameState.playerAnsweringQuestion = this.gameState.team2Players[this.gameState.team2PlayersTurn];
+                            }
+                        }
+                        // Else revealing all answers at the end of the round
+                        else {
+                            // Reveals answers but doesn't increment player or update game board score
+                        }
+                        this.gameState.correctAnswer = true;
+                        this.socket.emit('update-game-state', this.gameState);
+                        // Emit updated game state
+                    },
+
+                    wrongAnswer: function(faceoff = false) {
+                        // If in faceoff toggle btn clicked
+                        if (faceoff) {
+                            // Increment players turn of team that just answered, switch team of player answering, update player answering
+                            if (this.gameState.faceOffBtnClicked === 'team1Players') {
+                                this.nextPlayerTurn('team1Players');
+                                this.gameState.faceOffBtnClicked = 'team2Players';
+                                this.gameState.playerAnsweringQuestion = this.gameState.team2Players[this.gameState.team2PlayersTurn];
+                            }
+                            else {
+                                this.nextPlayerTurn('team2Players');
+                                this.gameState.faceOffBtnClicked = 'team1Players';
+                                this.gameState.playerAnsweringQuestion = this.gameState.team1Players[this.gameState.team1PlayersTurn];
+                            }
+
+                            this.gameState.stealing = true;
+
+                            this.socket.emit('update-game-state', this.gameState);
+
+                            this.socket.emit('show-strikes', 1);
+                        }
+                        else {
+                            // If stealing and got wrong answer then other team has won the round
+                            if (this.gameState.stealing) {
+                                // Show a single strike
+                                this.socket.emit('show-strikes', 1);
+                                // Add board score to team not answering's current point total
+                                if (this.gameState.teamAnswering === 'team2Players') {
+                                    this.gameState.team1Points += this.gameState.boardScore;
+                                }
+                                else {
+                                    this.gameState.team2Points += this.gameState.boardScore
+                                }
+                                // Set team answering to blank for answer reveals to not affect scores
+                                this.gameState.playerAnsweringQuestion = '';
+                                this.gameState.teamAnswering = '';
+                                
+                                this.socket.emit('update-game-state', this.gameState);
+                            }
+                            else {
+                                // Add strike to strike total
+                                this.gameState.strikes++;
+                                this.socket.emit('show-strikes', this.gameState.strikes);
+                                // Increment players turn (depending on team that just answered)
+                                if (this.gameState.teamAnswering === 'team1Players') {
+                                    this.nextPlayerTurn('team1Players');
+                                    this.gameState.playerAnsweringQuestion = this.gameState.team1Players[this.gameState.team1PlayersTurn];
+                                }
+                                else {
+                                    this.nextPlayerTurn('team2Players');
+                                    this.gameState.playerAnsweringQuestion = this.gameState.team2Players[this.gameState.team2PlayersTurn];
+                                }
+                                // If less than 3 strikes
+                                if (this.gameState.strikes < 3) {
+                                    // Do nothing and send updated game state
+                                    this.socket.emit('update-game-state', this.gameState);
+                                }
+                                else {
+                                    // Turn on stealing
+                                    this.gameState.stealing = true;
+                                    // Switch team answering to other team
+                                    this.gameState.playerAnsweringQuestion = '';
+                                    this.gameState.teamAnswering = this.gameState.teamAnswering === 'team1Players' ? 'team2Players' : 'team1Players';
+                                    // Send updated game state
+                                    this.socket.emit('update-game-state', this.gameState);
+                                }
+                            }
+
+                            
+                        }
+                    },
+
+                    neutralAnswer: function() {
+                        this.gameState.neutralAnswer = true;
+                        this.socket.emit('update-game-state', this.gameState);
+                    },
+
+                    // Helper functions
+                    resetApp: function(announce = false) {
+                        // Delete cookies, leave room
+                        this.deleteCookie('roomCode');
+                        this.deleteCookie('playerName');
+                        this.deleteCookie('playerType');
+                        this.socket.emit('leave-room', announce);
+
+                        // Reset everything except socket
+                        this.gamePage = 'landing';
+                        this.roomCode = '1234';
+                        this.playerType = '';
+                        this.playerName = '';
+                    
+                        this.joinButtonDisabled = true;
+                        this.joinRoomEntry = '';
+                        this.joinPageFailure = false;
+                    
+                        this.playerEntryButtonDisabled = true;
+                        this.playerNameEntry = '';
+                        this.playerNameEntryFailure = false;
+
+                        this.resetGameState();
+                    },
+
+                    resetGameState: function() {
+                        this.gameState = {
+                            gameStatus: 'waiting',
+                            noNamePlayers: 0,
+                            unassignedPlayers: [],
+                            team1Players: [],
+                            team1PlayersTurn: 0,
+                            team1Points: 0,
+                            team2Players: [],
+                            team2PlayersTurn: 0,
+                            team2Points: 0,
+                            hostStarted: false,
+                            inFaceOff: true,
+                            faceOffBtnClicked: '',
+                            faceOffFirstAnsIndex: '',
+                            teamWonFaceOff: '',
+                            playerAnsweringQuestion: '',
+                            teamAnswering: '',
+                            host: '',
+                            question: '',
+                            answers: [
+                                {answerText: '', answerPoints: 0, answered: false}
+                            ],
+                            answerHoldersCol1: [],
+                            answerHoldersCol2: [],
+                            strikes: 0,
+                            round: 0,
+                            boardScore: 0,
+                            stealing: false,
+                            finished: false,
+                            presenterDC: false,
+                            hostDC: false,
+                            team1DC: false,
+                            team2DC: false,
+                            correctAnswer: false,
+                            neutralAnswer: false
+                        }
+                    },
+
+                    nextPlayerTurn: function(team) {
+                        if (team === 'team1Players') {
+                            let teamSize = this.gameState.team1Players.length;
+                            var playerAnsweringNext = '';
+                            let count = 0;
+                            do {
+                                this.gameState.team1PlayersTurn = (this.gameState.team1PlayersTurn + 1) % this.gameState.team1Players.length;
+                                playerAnsweringNext = this.gameState.team1Players[this.gameState.team1PlayersTurn];
+                                count++;
+                            } while(playerAnsweringNext.endsWith('--dc--') && count <= teamSize + 1)
+                            // If all players on the team have disconnected at same time
+                            if (count === teamSize + 1) {
+                                this.team1DC = true;
+                            }
+
+                        }
+                        else {
+                            let teamSize = this.gameState.team2Players.length;
+                            var playerAnsweringNext = '';
+                            let count = 0;
+                            do {
+                                this.gameState.team2PlayersTurn = (this.gameState.team2PlayersTurn + 1) % this.gameState.team2Players.length;
+                                playerAnsweringNext = this.gameState.team2Players[this.gameState.team2PlayersTurn];
+                                count++;
+                            } while(playerAnsweringNext.endsWith('--dc--') && count <= teamSize + 1)
+                            // If all players on the team have disconnected at same time
+                            if (count === teamSize + 1) {
+                                this.team2DC = true;
+                            }
+                        }
+                    },
+
+                    getQuestion: function() {
+                        $.get('/api/v1/question', (questionObj) => {
+                            this.gameState.question = questionObj.question.replace(/&x22;/g, '"');
+                            this.gameState.answers = [];
+                            questionObj.answers.forEach(ans => {
+                                this.gameState.answers.push({answerText: ans[0], answerPoints: ans[1], answered: false});
+                            });
+                            // Formatting answers
+                            let answerNum = this.gameState.answers.length;
+                            answerNum = (answerNum < 8) ? 8 : answerNum;
+                            answerNum = (answerNum % 2 != 0) ? answerNum + 1 : answerNum;
+                            this.gameState.answerHoldersCol1 = Array.apply(null, Array(answerNum/2)).map(function (x, i) { return i; });
+                            this.gameState.answerHoldersCol2 = Array.apply(null, Array(answerNum/2)).map(function (x, i) { return i + answerNum/2; });
+
+                            this.gameState.faceOffFirstAnsIndex = answerNum - 1;
+
+                            this.socket.emit('update-game-state', this.gameState);
+                        });
+                    },
+
+                    setCookie: function(cName, cValue, exHours) {
+                        const d = new Date();
+                        d.setTime(d.getTime() + (exHours*60*60*1000));
+                        let expires = "expires="+ d.toUTCString();
+                        document.cookie = cName + "=" + cValue + ";" + expires + ";path=/";
+                    },
+
+                    getCookie: function(cName) {
+                        let name = cName + "=";
+                        let decodedCookie = decodeURIComponent(document.cookie);
+                        let ca = decodedCookie.split(';');
+                        for(let i = 0; i <ca.length; i++) {
+                            let c = ca[i];
+                            while (c.charAt(0) == ' ') {
+                            c = c.substring(1);
+                            }
+                            if (c.indexOf(name) == 0) {
+                            return c.substring(name.length, c.length);
+                            }
+                        }
+                        return "";
+                    },
+
+                    deleteCookie: function(cName) {
+                        document.cookie = cName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                    },
+
+                    addSocketEvents: function() {
+                        // Update game state
+                        this.socket.on('update-game-state', (gameState) => {
+                            this.gameState = gameState;
+                        });
+                        
+                        // Presenter Created Room
+                        this.socket.on('created-room', (code) => {
+                            this.roomCode = code;
+                            // Set playerType to presenter
+                            this.playerType = 'presenter';
+                            this.playerName = 'presenter';
+                            // Set gamePage to createRoom
+                            this.gamePage = 'createRoom';
+                        });
+                        
+                        // Player Joined Room
+                        this.socket.on('joined-room', (status) => {
+                            // Joined room success
+                            if (status) {
+                                this.joinPageFailure = false;
+                                // playerType: presenter add to no-name players count
+                                if (this.playerType === 'presenter') {
+                                    this.gameState.noNamePlayers++;
+                                    // Emit updated game state to room
+                                    this.socket.emit('update-game-state', this.gameState);
+                                }
+                                else if (this.playerName === '') {
+                                    this.roomCode = this.joinRoomEntry.toUpperCase();
+                                    // Go to name entry room
+                                    this.gamePage = 'nameSelect';
+                                }
+                            }
+                            // Joined room failure
+                            else {
+                                this.joinPageFailure = true;
+                            }
+                        });
+                        
+                        // Player Reconnected
+                        this.socket.on('reconnected-to-room', (playerName, playerType) => {
+                            if (playerType === 'presenter') {
+                                // Remove presenterDC
+                                this.gameState.presenterDC = false;
+                            }
+                            else if (playerType === 'host') {
+                                // Remove hostDC
+                                this.gameState.hostDC = false;
+                            }
+                            // Remove note on players name that they've disconnected
+                            else {
+                                if (playerType === 'team1Players') {
+                                    this.gameState.team1Players.forEach((player, i) => {
+                                        if (playerName + '--dc--' == player) {
+                                            this.gameState.team1Players[i] = playerName;
+                                        }
+                                    });
+                                    if (this.gameState.team1DC) {
+                                        this.gameState.team1DC = false;
+                                        if (this.gameState.teamAnswering === 'team1Players')
+                                            this.nextPlayerTurn('team1Players');
+                                    }
+                                }
+                                else {
+                                    this.gameState.team2Players.forEach((player, i) => {
+                                        if (playerName + '--dc--' == player) {
+                                            this.gameState.team2Players[i] = playerName;
+                                        }
+                                    });
+                                    if (this.gameState.team2DC) {
+                                        this.gameState.team2DC = false;
+                                        if (this.gameState.teamAnswering === 'team2Players')
+                                            this.nextPlayerTurn('team2Players');
+                                    }
+                                }
+                            }
+                            this.socket.emit('update-game-state', this.gameState);
+                            
+                        });
+                        
+                        // Failed to Reconnect to Room
+                        this.socket.on('reconnect-failed', () => {
+                            this.gamePage = 'reconnect failed';
+                        });
+                        
+                        // Player Disconnected
+                        this.socket.on('player-disconnected', (playerName) => {
+                            if (playerName == undefined) {
+                                this.gameState.noNamePlayers--;
+                                this.socket.emit('update-game-state', this.gameState);
+                            }
+                            else if (playerName === 'presenter') {
+                                if (this.gameState.gameStatus === 'waiting') {
+                                    // Leave room
+                                    alert('The Room Host Disconnected')
+                                    // Reset app
+                                    this.resetApp();
+                                }
+                                else {
+                                    this.gameState.presenterDC = true;
+                                    // Leads to new display on all other screens
+                                        // Loading icon with message that presenter dc'd
+                                        // Exit button to leave game
+                                }
+                                
+                            }
+                            else {
+                                // If still waiting to start
+                                if (this.gameState.gameStatus === 'waiting') {
+                                    let team1Index = this.gameState.team1Players.indexOf(playerName);
+                                    let team2Index = this.gameState.team2Players.indexOf(playerName);
+                                    let uaIndex = this.gameState.unassignedPlayers.indexOf(playerName);
+                                    if (this.gameState.host == playerName) {
+                                        this.gameState.host = '';
+                                    }
+                                    else if (team1Index > -1) {
+                                        this.gameState.team1Players.splice(team1Index, 1);
+                                    }
+                                    else if (team2Index > -1) {
+                                        this.gameState.team2Players.splice(team2Index, 1);
+                                    }
+                                    else if (uaIndex > -1) {
+                                        this.gameState.unassignedPlayers.splice(uaIndex, 1);
+                                    }
+                                    this.socket.emit('update-game-state', this.gameState);
+                                }
+                                else {
+                                    // If a player disconnects while playing
+                                    if (playerName !== this.gameState.host) {
+                                        // If player isn't the host
+                                        // Make note on the players name that they've disconnected
+                                        let team1Index = this.gameState.team1Players.indexOf(playerName);
+                                        if (team1Index > -1) {
+                                            let player = this.gameState.team1Players[team1Index];
+                                            player += '--dc--';
+                                            this.gameState.team1Players[team1Index] = player;
+                                        } else {
+                                            let team2Index = this.gameState.team2Players.indexOf(playerName);
+                                            if (team2Index > -1) {
+                                                let player = this.gameState.team2Players[team2Index];
+                                                player += '--dc--';
+                                                this.gameState.team2Players[team2Index] = player;
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        this.gameState.hostDC = true;
+                                    }
+                                }
+                                
+                            }
+                        });
+                        
+                        // Player chooses to leave room
+                        this.socket.on('player-left-room', (playerName) => {
+                            if (playerName === undefined) {
+                                this.gameState.noNamePlayers--;
+                                this.socket.emit('update-game-state', this.gameState);
+                            }
+                            else if (playerName === 'presenter') {
+                                // Leave room
+                                alert('The Room Host Disconnected')
+
+                                this.resetApp();
+                            }
+                            else {
+                                // If still waiting to start (should only happen in waiting state)
+                                if (this.gameState.gameStatus === 'waiting') {
+                                    let team1Index = this.gameState.team1Players.indexOf(playerName);
+                                    let team2Index = this.gameState.team2Players.indexOf(playerName);
+                                    let uaIndex = this.gameState.unassignedPlayers.indexOf(playerName);
+                                    if (this.gameState.host == playerName) {
+                                        this.gameState.host = '';
+                                    }
+                                    else if (team1Index > -1) {
+                                        this.gameState.team1Players.splice(team1Index, 1);
+                                    }
+                                    else if (team2Index > -1) {
+                                        this.gameState.team2Players.splice(team2Index, 1);
+                                    }
+                                    else if (uaIndex > -1) {
+                                        this.gameState.unassignedPlayers.splice(uaIndex, 1);
+                                    }
+                                    this.socket.emit('update-game-state', this.gameState);
+                                }
+                                else {
+                                    if (playerName !== this.gameState.host) {
+                                        let team1Index = this.gameState.team1Players.indexOf(playerName);
+                                        let team2Index = this.gameState.team2Players.indexOf(playerName);
+                                        let uaIndex = this.gameState.unassignedPlayers.indexOf(playerName);
+                                        if (team1Index > -1) {
+                                            this.gameState.team1Players.splice(team1Index, 1);
+                                            if (this.gameState.team1Players.length < 1) {
+                                                this.resetApp();
+                                                alert('All of Team 1 Has Left');
+                                            }
+                                        }
+                                        else if (team2Index > -1) {
+                                            this.gameState.team2Players.splice(team2Index, 1);
+                                            if (this.gameState.team2Players.length < 1) {
+                                                this.resetApp();
+                                                alert('All of Team 2 Has Left');
+                                            }
+                                        }
+                                        else if (uaIndex > -1) {
+                                            this.gameState.unassignedPlayers.splice(uaIndex, 1);
+                                        }
+                                    }
+                                    else {
+                                        alert('The Host Left the Room')
+                                        
+                                        this.resetApp();
+                                    }
+                                }
+                            }
+                            
+                        });
+                        
+                        //  Presenter Destroyed Room
+                        this.socket.on('room-destroyed', () => {
+                            this.socket.emit('leave-room', false);
+                            this.resetApp();
+                        });
+                        
+                        //  Presenter Starts the Game
+                        this.socket.on('start-game', (gameState) => {
+                            // Save data in cookie (in case of disconnect)
+                            this.setCookie('playerType', this.playerType, 1);
+                            this.setCookie('playerName', this.playerName, 1);
+                            this.setCookie('roomCode', this.roomCode, 1);
+
+                            // Set game state and set game page to playing page
+                            this.gameState = gameState;
+                            this.gamePage = 'playing';
+                        });
+                        
+                        // Someone hit face off btn
+                        this.socket.on('face-off-btn', playerType => {
+                            if (this.playerType === 'presenter') {
+                                if (this.gameState.faceOffBtnClicked === '') {
+                                    this.gameState.faceOffBtnClicked = playerType;
+                                    this.gameState.playerAnsweringQuestion = playerType === 'team1Players' ? this.gameState.team1Players[this.gameState.team1PlayersTurn] : this.gameState.team2Players[this.gameState.team2PlayersTurn];
+                                    this.socket.emit('update-game-state', this.gameState);
+                                }
+                            }
+                        });
+
+                        // Display strikes
+                        this.socket.on('show-strikes', numStrikes => {
+                            if (this.playerType === 'presenter') {
+                                // Play wrong answer sound
+                                $('#wrong-answer-audio')[0].play();
+                                this.showStrikes = numStrikes;
+                                setTimeout(() => this.showStrikes = 0, 2000);
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
